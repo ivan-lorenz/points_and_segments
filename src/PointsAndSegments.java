@@ -1,7 +1,4 @@
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
-import java.util.Scanner;
+import java.util.*;
 
 public class PointsAndSegments {
 
@@ -9,14 +6,20 @@ public class PointsAndSegments {
 
     public static int[] fastCountSegments(int[] starts, int[] ends, int[] points) {
         int[] cnt = new int[points.length];
-        Map<Integer, Integer> pointIndex = new HashMap<>();
+        Map<Integer, List<Integer>> pointIndex = new HashMap<>();
         for (int i=0; i < points.length; i++) {
-            pointIndex.put(points[i], i);
+            List<Integer> list;
+            if (pointIndex.containsKey(points[i]))
+                list = pointIndex.get(points[i]);
+            else
+                list =  new ArrayList<>();
+            list.add(i);
+            pointIndex.put(points[i],list);
         }
 
         int elementsLength = starts.length + ends.length + points.length;
         int[] elements = new int[elementsLength];
-        byte[] types = new byte[elementsLength];
+        int[] types = new int[elementsLength];
         for (int i = 0; i < elementsLength; i ++) {
             if (i < starts.length) {
                 elements[i] = starts[i];
@@ -43,7 +46,8 @@ public class PointsAndSegments {
                     numSegments--;
                     break;
                 case 1:
-                    cnt[pointIndex.get(elements[i])] = numSegments;
+                    for(int index: pointIndex.get(elements[i]) )
+                        cnt[index] = numSegments;
                     numPoints++;
                     break;
             }
@@ -52,7 +56,7 @@ public class PointsAndSegments {
         return cnt;
     }
 
-    private static void randomizedQuickSort(int[] a, byte[] types, int l, int r) {
+    private static void randomizedQuickSort(int[] a, int[] types, int l, int r) {
         if (l >= r) {
             return;
         }
@@ -61,7 +65,7 @@ public class PointsAndSegments {
         int t = a[l];
         a[l] = a[k];
         a[k] = t;
-        byte t2 = types[l];
+        int t2 = types[l];
         types[l] = types[k];
         types[k] = t2;
 
@@ -71,17 +75,17 @@ public class PointsAndSegments {
         randomizedQuickSort(a, types,m + 1, r);
     }
 
-    private static int partition2(int[] a, byte[] types, int l, int r) {
+    private static int partition2(int[] a, int[] types, int l, int r) {
         int x = a[l];
-        byte xType = types[l];
+        int xType = types[l];
         int j = l;
         for (int i = l + 1; i <= r; i++) {
-            if (a[i] < x || (a[i] == x && types[i] < xType)) {
+            if (a[i] < x || (a[i] == x && types[i] <= xType)) {
                 j++;
                 int t = a[i];
                 a[i] = a[j];
                 a[j] = t;
-                byte t2 = types[i];
+                int t2 = types[i];
                 types[i] = types[j];
                 types[j] = t2;
             }
@@ -89,7 +93,7 @@ public class PointsAndSegments {
         int t = a[l];
         a[l] = a[j];
         a[j] = t;
-        byte t2 = types[l];
+        int t2 = types[l];
         types[l] = types[j];
         types[j] = t2;
         return j;

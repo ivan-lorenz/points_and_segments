@@ -1,24 +1,24 @@
 import org.scalacheck.Prop.forAll
-import org.scalacheck.{Gen, Properties}
+import org.scalacheck.{Gen, Properties, Test}
 
 object PointsAndSegmentsCheck extends Properties("PointsAndSegments"){
 
   val genSegments: Gen[(Int, Int)] = for {
-    lower <- Gen.choose(-1000,1000)
-    upper <- Gen.choose(lower, 1000)
+    lower <- Gen.choose(-10000,0)
+    upper <- Gen.choose(lower, 10000)
   } yield (lower, upper)
   val listOfSegments: Gen[Array[(Int,Int)]] =
     for {
-      size <- Gen.choose(1,100)
+      size <- Gen.choose(1,1000)
       elems <- Gen.containerOfN[Array, (Int, Int)](size, genSegments)
     } yield elems
 
-  val genSize: Gen[Int] = Gen.choose(1, 1000)
+  val genSize: Gen[Int] = Gen.choose(-10000, 10000)
   val listOfNumbers: Gen[Array[Int]] =
     for {
-      size <- Gen.choose(1,100)
-      elems <- Gen.containerOfN[Set, Int](size, genSize)
-    } yield elems.toArray
+      size <- Gen.choose(1,1000)
+      elems <- Gen.containerOfN[Array, Int](size, genSize)
+    } yield elems
 
   property("both solutions should be equivalent") =
     forAll(listOfSegments, listOfNumbers){(segments, points)  =>
@@ -34,4 +34,5 @@ object PointsAndSegmentsCheck extends Properties("PointsAndSegments"){
       assertion
     }
 
+  override def overrideParameters(p: Test.Parameters): Test.Parameters = p.withMinSuccessfulTests(10000)
 }
