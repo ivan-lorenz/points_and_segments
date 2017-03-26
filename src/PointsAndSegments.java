@@ -23,10 +23,10 @@ public class PointsAndSegments {
                 types[i] = 0;
             } else if (i < starts.length + ends.length) {
                 elements[i] = ends[i - starts.length];
-                types[i] = 1;
+                types[i] = 2;
             } else {
                 elements[i] = points[i - starts.length - ends.length];
-                types[i] = 2;
+                types[i] = 1;
             }
         }
 
@@ -39,10 +39,10 @@ public class PointsAndSegments {
                 case 0:
                     numSegments++;
                     break;
-                case 1:
+                case 2:
                     numSegments--;
                     break;
-                case 2:
+                case 1:
                     cnt[pointIndex.get(elements[i])] = numSegments;
                     numPoints++;
                     break;
@@ -73,9 +73,10 @@ public class PointsAndSegments {
 
     private static int partition2(int[] a, byte[] types, int l, int r) {
         int x = a[l];
+        byte xType = types[l];
         int j = l;
         for (int i = l + 1; i <= r; i++) {
-            if (a[i] <= x) {
+            if (a[i] < x || (a[i] == x && types[i] < xType)) {
                 j++;
                 int t = a[i];
                 a[i] = a[j];
@@ -122,7 +123,7 @@ public class PointsAndSegments {
             points[i] = scanner.nextInt();
         }
         //use fastCountSegments
-        int[] cnt = naiveCountSegments(starts, ends, points);
+        int[] cnt = fastCountSegments(starts, ends, points);
         for (int x : cnt) {
             System.out.print(x + " ");
         }
